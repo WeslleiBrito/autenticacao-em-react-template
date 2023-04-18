@@ -1,18 +1,31 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import useForms from '../../hooks/useForms'
-
+import {BASE_URL} from "../../constants/BASE_URL"
 import { ContainerForm, ContainerLogin, Input } from './styled'
 import { irParaCadastro } from '../../routes/coordinator'
+import { irParaFeed } from '../../routes/coordinator'
+import axios from 'axios'
 
 export default function Login() {
   const navigate = useNavigate()
 
   const { form, onChange } = useForms({ email: "", password: "" })
-
+  
   const enviaLogin = (e) => {
     e.preventDefault()
     console.log(form)
+
+   
+    axios.post(`${BASE_URL}/users/login`, form)
+    .then((response) => {
+      console.log("Respota do ligin", response.data.token)
+      window.localStorage.setItem("token", response.data.token)
+      irParaFeed(navigate)
+    })
+    .catch((error) => {
+      console.log("Resposta do error do login", error.response)
+    })
   }
 
   return (

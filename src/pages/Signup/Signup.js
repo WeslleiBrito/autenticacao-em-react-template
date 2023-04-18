@@ -1,12 +1,31 @@
 import React from 'react'
 import useForms from '../../hooks/useForms'
 import { ContainerForm, ContainerSignup, Input } from './styled'
+import axios from 'axios'
+import { BASE_URL } from '../../constants/BASE_URL'
+import { useNavigate } from 'react-router-dom'
+import { irParaFeed } from '../../routes/coordinator'
 
 export default function Signup() {
     const { form, onChange } = useForms({ email: "", senha: "", nomeUsuario: "", confirmaSenha: "" })
+    const navigate = useNavigate()
+    const body = {
+        username: form.nomeUsuario,
+        email: form.email,
+        password: form.senha
+    }
 
     const enviarCadastro = (e) => {
         e.preventDefault()
+        axios.post(`${BASE_URL}/users/signup`, body)
+        .then((response) => {
+            console.log("Respota do signup", response.data.token)
+            window.localStorage.setItem("token", response.data.token)
+            irParaFeed(navigate)
+        })
+        .catch((error) => {
+            console.log("Respota do signup", error)
+        })
         //* EXTRA: validando a senha - ter certeza que o usuário sabe qual senha cadastrou
         // não é necessário caso use o pattern para a mesma funcionalidade
         if (form.senha === form.confirmaSenha) {

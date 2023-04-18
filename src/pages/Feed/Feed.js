@@ -1,12 +1,29 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import CardPost from '../../components/CardPost/CardPost'
 import CriarPost from '../../components/CriarPost/CriarPost'
 import useRequestData from '../../hooks/useRequestData'
 import { FeedContainer } from './styled'
+import { useNavigate } from 'react-router-dom'
+import { irParaLogin } from '../../routes/coordinator'
 
 
 export default function Feed() {
-  const [posts] = useRequestData([], '/posts')
+  const token = localStorage.getItem("token")
+
+  const headers = {
+    headers: {
+      authorization: token
+    }
+  }
+
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if(!token){
+      irParaLogin(navigate)
+    }
+  }, [])
+  const [posts] = useRequestData([], '/posts', headers)
 
   return (
     <FeedContainer>
